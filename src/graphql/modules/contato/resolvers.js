@@ -2,26 +2,15 @@ const db = require("../../../db");
 
 module.exports = {
   Query: {
-    contatos: async () => await db("contatos"),
+    contatos: async (obj, args, { usuarioCadastroService }, info) =>
+      await usuarioCadastroService.contatos(),
   },
   Mutation: {
-    criarContato: async (_, { data }) =>
-      await (
-        await db("contatos").insert(data).returning("*")
-      )[0],
-    atualizarContato: async (_, { id, data }) =>
-      await (
-        await db("contatos").where({ id }).update(data).returning("*")
-      )[0],
-    deletarContato: async (_, { filtro }) => {
-      if (filtro.id) {
-        return await db("contatos").where({ id: filtro.id }).delete();
-      }
-      if (filtro.email) {
-        return await db("contatos").where({ email: filtro.email }).delete();
-      }
-
-      throw new Error("Por favor, passar um parametro!");
-    },
+    criarContato: async (_, { data }, { usuarioCadastroService }) =>
+      await usuarioCadastroService.criarContato(data),
+    atualizarContato: async (_, { id, data }, { usuarioCadastroService }) =>
+      await usuarioCadastroService.atualizarContato(id, data),
+    deletarContato: async (_, { filtro }, { usuarioCadastroService }) =>
+      await usuarioCadastroService.deletarContato(filtro),
   },
 };
